@@ -1,6 +1,6 @@
 absl-py==2.1.0
 mediapipe==0.8.11
-opencv-contrib-python==4.9.0.80
+opencv-python-headless
 matplotlib==3.8.3
 numpy==1.26.4
 streamlit==1.33.0
