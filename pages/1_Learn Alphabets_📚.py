@@ -4,14 +4,26 @@ import time
 from model import prediction_model
 from urls import video_urls
 
-if "page" not in st.session_state or st.session_state["page"]!="learnpage":
-    st.session_state["page"] = "learnpage"
+if "page" not in st.session_state or st.session_state["page"]!='learnpage':
+    cv2.destroyAllWindows()
+    st.session_state["page"] = 'learnpage'
     cap = cv2.VideoCapture(cv2.CAP_DSHOW)
 
 def hide_streamlit_style():
     return """
         <style>
-        
+
+        .st-emotion-cache-uf99v8 {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            overflow: auto;
+            -webkit-box-align: center;
+            align-items: center;
+            overflow-clip-margin: content-box;
+            overflow: clip;
+        }
+
         /* Hide side toolbar buttons*/
         div[data-testid="stToolbar"] {
         visibility: hidden;
@@ -67,12 +79,12 @@ def update_video(charachter):
 if "alphabet" not in st.session_state:
     st.session_state["alphabet"] = 0
 
-ALPHABET_LIST = ["A", "B", "C", "D", "E", "F", "I", "L", "O", "R", "U", "Y"]
+ALPHABET_LIST = ["A", "B", "C", "D", "E", "F","G","H", "I","J","K" "L", "O", "R", "U", "Y"]
 NUM_ALPHABETS = len(ALPHABET_LIST)
 
 # Element struction
 title_placeholder = st.empty()  # stores letter title
-col1, col2 = st.columns([0.5, 0.5], gap="medium")
+col1, col2 = st.columns([0.5, 0.5])
 with col1:
     video_placeholder = st.empty()  # to display video
     video_placeholder.markdown(
@@ -89,9 +101,6 @@ prob = 0
 pred_conf = st.progress(prob)
 
 
-
-
-
 while True and st.session_state.page == "learnpage":
 
     if cap is not None or cap.isOpened():
@@ -104,7 +113,7 @@ while True and st.session_state.page == "learnpage":
             f"Learning Alphabet : {ALPHABET_LIST[st.session_state['alphabet']]}"
         )
 
-        frame, prob = prediction_model(frame)
+        frame, prob = prediction_model(frame,st.session_state["alphabet"])
         frame = cv2.resize(
             frame, (500, 500), fx=0.1, fy=0.1, interpolation=cv2.INTER_CUBIC
         )

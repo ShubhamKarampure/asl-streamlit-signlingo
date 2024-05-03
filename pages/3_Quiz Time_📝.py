@@ -8,7 +8,7 @@ if "page" not in st.session_state:
 
 st.session_state["page"] = "test"
 
-st.header("Test your understand 📝")
+st.header("Quiz Time")
 
 
 # Hide Streamlit style
@@ -137,15 +137,15 @@ def question():
             st.session_state["options"] = options 
 
     with col2:
+        st.subheader("Choose the best option:")
         checked_answer, correct_answer = stb.single_choice(
-            "Select the right option",
+            " ",
             st.session_state["options"],
             st.session_state["options"].index(st.session_state["correct_option"]),
-            success = f"Perfect! It's letter {st.session_state['correct_option']}!",
+            success=f"Perfect! It's letter {st.session_state['correct_option']}!",
             error="Sadly, that's not true",
             button="Click to check",
         )
-       
 
     # Check the answer
     if checked_answer:

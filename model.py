@@ -18,7 +18,7 @@ hands = mp_hands.Hands(static_image_mode=True, min_detection_confidence=0.3)
 word = []
 
 
-def prediction_model(frame):
+def prediction_model(frame,charachter_index):
     data_aux = []
     x_list = []
     y_list = []
@@ -72,11 +72,11 @@ def prediction_model(frame):
             prediction_prob = model.predict_proba([np.asarray(data_aux)])
             prob = np.max(prediction_prob)
 
-            if prediction_prob[0][st.session_state["alphabet"]] > 0.6:
+            if prediction_prob[0][charachter_index] > 0.6:
                 prob = 100
             else:
                 prob = (
-                    int(prediction_prob[0][st.session_state["alphabet"]] * 100) // 10
+                    int(prediction_prob[0][charachter_index] * 100) // 10
                 ) * 10
 
     return frameFlipped, prob
