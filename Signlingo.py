@@ -1,76 +1,13 @@
 import streamlit as st
 from streamlit_login_auth_ui.widgets import __login__
+from styles import page_setup,hide_navbar,unhide_nav_bar
 
 st.set_page_config(
         page_title="signlingo",
 )
 
-def hide_streamlit_style():
-    return """
-        <style>
-        /* Hide side toolbar buttons*/
-        div[data-testid="stToolbar"] {
-        visibility: hidden;
-        height: 0%;
-        position: fixed;
-        }
-
-        /* hide header */
-        header {
-        visibility: hidden;
-        height: 0%;
-        }
-
-        img {
-        border-radius: 1rem;
-        }
-
-        .st-emotion-cache-gh2jqd {
-            width: 100%;
-            padding: 0rem 1rem 10rem;
-            max-width: 46rem;
-        }
-
-        .st-as {
-            height:2rem
-        }
-
-        .video-wrapper {
-        background-color: white;
-        display: inline-block;
-        width: 336px;
-        height: 336px;
-        overflow: hidden;
-        position: relative;
-        border-radius: 1rem; /* Add border radius to match the image */
-        align-content : center
-        }
-
-        .st-emotion-cache-hc3laj {
-        position: fixed;
-        top: 10px;
-        right: 32.5px;
-        }
-        
-        .st-emotion-cache-j7qwjs {
-        display:none;
-        }
-
-        .st-emotion-cache-1u2dcfn {
-        display:none;
-        }
-
-        [data-testid="stSidebarNavSeparator"]{
-        display: none;
-        }
-
-       [data-testid="stSidebarNavItems"] {
-            max-height: none;
-        }
-        </style>
-    """
-st.markdown(hide_streamlit_style(), unsafe_allow_html=True)
-
+st.markdown(page_setup(), unsafe_allow_html=True)
+st.markdown(hide_navbar(), unsafe_allow_html=True)
 
 __login__obj = __login__(
     auth_token="courier_auth_token",
@@ -87,14 +24,7 @@ LOGGED_IN = __login__obj.build_login_ui()
 
 if LOGGED_IN == True:
 
-    unhide_nav_bar = """
-        <style>
-        .st-emotion-cache-j7qwjs {
-            display:block;
-        }
-        </style>
-    """
-    st.markdown(unhide_nav_bar, unsafe_allow_html=True)
+    st.markdown(unhide_nav_bar(), unsafe_allow_html=True)
 
     st.write("# Welcome to Signlingo! 👋")
 
@@ -109,7 +39,7 @@ if LOGGED_IN == True:
     st.markdown(
         """
         <div class="section">
-            <a class="link" href="#about">About</a> | 
+            <a class="link" href="About_Us">About</a> | 
             <a class="link" href="#features">Features</a> | 
             <a class="link" href="#contact">Contact</a>
         </div>
