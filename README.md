@@ -9,10 +9,7 @@ Signlingo is a web application designed to help individuals learn and practice A
 
 ## Requirements
 - Python version 3.10.0
-- Install dependencies from `requirements.txt` using:
-  ```
-  pip install -r requirements.txt
-  ```
+
 ## Installation
 1. Clone the repository.
 2. Navigate to the project directory.
