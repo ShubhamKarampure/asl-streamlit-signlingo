@@ -3,8 +3,9 @@ import streamlit as st
 import time
 from model import prediction_model
 from urls import video_urls
-from components import progress_bar
+from components import progress_bar, update_video,detected_word
 from styles import page_setup, page_with_webcam_video
+
 
 if "page" not in st.session_state or st.session_state["page"]!='wordpage':
     cv2.destroyAllWindows()
@@ -14,41 +15,27 @@ if "page" not in st.session_state or st.session_state["page"]!='wordpage':
 st.markdown(page_setup(), unsafe_allow_html=True)
 st.markdown(page_with_webcam_video(), unsafe_allow_html=True)
 
-def update_video(character):
-    return f"""
-    <div class="video-wrapper">
-    <video width="350" height="290" autoplay controlsList="nodownload" loop style="transform: scaleX(-1);">
-        <source src="{video_urls[character]}" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
-    </div>  
-    """
-
-
-def detected_word(WORD, detected_index):
-    markdown_str = f'<div style="font-family: Arial, sans-serif; font-weight: bold; text-align: center; font-size: 30px;">'
-    # Loop through each letter in the word
-    for i, letter in enumerate(WORD):
-        # Check if the current letter index is less than or equal to the detected index
-        if i <= detected_index:
-            # If yes, add the letter in green color
-            markdown_str += f'<span style="color:#ffe090;">{letter}</span>'
-        else:
-            # If no, add the letter in white color
-            markdown_str += f'<span style="color:white;">{letter}</span>'
-    markdown_str += "</div>"
-    return markdown_str
-
 
 if "word" not in st.session_state:
     st.session_state['word'] = 0
     st.session_state['index'] = 0
 
-WORD_LIST = ["ABC"]
+
+WORD_LIST = [
+    "CODE",
+    "DATA",
+    "LEARN",
+    "TEST",
+    "IDEA",
+    "PYTHON",
+    "HAPPY",
+    "SMART",
+    "QUICK",
+    "BRAIN",
+]
 NUM_WORD = len(WORD_LIST)
 
 # Element structure
-title_placeholder = st.empty()  # stores letter title
 col1, col2 = st.columns([0.5, 0.5], gap="medium")
 with col1:
     video_placeholder = st.empty()  # to display video
@@ -58,13 +45,13 @@ with col1:
         ),
         unsafe_allow_html=True,
     )
+    matched_placeholder = st.empty()
 with col2:
     webcam_placeholder = st.empty()  # to display webcam
+    progress_bar_placeholder = st.empty()
 
-matched_placeholder = st.empty()
 
 # creating the progress bar
-progress_bar_placeholder = st.empty()
 
 while True and st.session_state["page"] == "wordpage":
 
@@ -74,18 +61,14 @@ while True and st.session_state["page"] == "wordpage":
         st.write("loading")
 
     if ret:
-        title_placeholder.header("Learn Word")
+
         current_word_index = st.session_state["word"]
 
         frame, prob = prediction_model(
             frame,
-            ord(WORD_LIST[st.session_state["word"]][st.session_state['index']])
-            - ord("A"),
+            WORD_LIST[st.session_state["word"]][st.session_state['index']]
         )
 
-        frame = cv2.resize(
-            frame, (500, 500), fx=0.1, fy=0.1, interpolation=cv2.INTER_CUBIC
-        )
         webcam_placeholder.image(frame, channels="BGR")
 
         matched_placeholder.markdown(

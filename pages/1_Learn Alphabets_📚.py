@@ -3,7 +3,7 @@ import streamlit as st
 import time
 from model import prediction_model
 from urls import video_urls
-from components import progress_bar
+from components import progress_bar,update_video
 from styles import page_setup,page_with_webcam_video
 
 if "page" not in st.session_state or st.session_state["page"]!='learnpage':
@@ -14,24 +14,39 @@ if "page" not in st.session_state or st.session_state["page"]!='learnpage':
 st.markdown(page_setup(), unsafe_allow_html=True)
 st.markdown(page_with_webcam_video(), unsafe_allow_html=True)
 
-def update_video(charachter):
-    return f"""
-    <div class="video-wrapper">
-    <video width="350" height="290" autoplay controlsList="nodownload" loop style="transform: scaleX(-1);">
-        <source src="{video_urls[charachter]}" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
-    </div>  
-    """
-
 if "alphabet" not in st.session_state:
     st.session_state["alphabet"] = 0
 
-ALPHABET_LIST = ["A", "B", "C", "D", "E", "F","G","H", "I","J","K" "L", "O", "R", "U", "Y"]
+ALPHABET_LIST = {
+    0:"A",
+    1:"B",
+    2:"C",
+    3:"D",
+    4:"E",
+    5:"F",
+    6:"G",
+    7:"H",
+    8:"I",
+    9:"J",
+    10:"K",
+    11:"L",
+    12:"M",
+    13:"N",
+    14:"O",
+    15:"P",
+    16:"R",
+    17:"S",
+    18:"T",
+    19:"U",
+    20:"V",
+    21:"W",
+    22:"X",
+    23:"Y",
+}
+
 NUM_ALPHABETS = len(ALPHABET_LIST)
 
 # Element struction
-title_placeholder = st.empty()  # stores letter title
 col1, col2 = st.columns([0.5, 0.5])
 with col1:
     video_placeholder = st.empty()  # to display video
@@ -56,16 +71,10 @@ while True and st.session_state.page == "learnpage":
         st.write("loading")
 
     if ret:
-        title_placeholder.header(
-            f"Learning Alphabet : {ALPHABET_LIST[st.session_state['alphabet']]}"
-        )
 
-        frame, prob = prediction_model(frame,st.session_state["alphabet"])
-        frame = cv2.resize(
-            frame, (500, 500), fx=0.1, fy=0.1, interpolation=cv2.INTER_CUBIC
-        )
+        frame, prob = prediction_model(frame,ALPHABET_LIST[st.session_state["alphabet"]])
+        
         webcam_placeholder.image(frame, channels="BGR")
-
 
         progress_bar_placeholder.markdown(
             progress_bar(prob),
