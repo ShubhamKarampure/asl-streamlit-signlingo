@@ -5,12 +5,22 @@ from model import prediction_model
 from urls import video_urls
 from components import progress_bar
 from styles import page_setup,page_with_webcam_video
+import mysql.connector
+from Signlingo import current_user
+import datetime
 
+print(datetime.datetime.now())
 if "page" not in st.session_state or st.session_state["page"]!='learnpage':
     cv2.destroyAllWindows()
     st.session_state["page"] = 'learnpage'
     cap = cv2.VideoCapture(cv2.CAP_DSHOW)
 
+conn = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    password="aj19@SQL",
+    database="signlingo"
+     )
 st.markdown(page_setup(), unsafe_allow_html=True)
 st.markdown(page_with_webcam_video(), unsafe_allow_html=True)
 
@@ -76,6 +86,25 @@ while True and st.session_state.page == "learnpage":
             st.balloons()
 
             video_placeholder.empty()
+             # WORD_LIST[current_word_index] # Aroosh
+            try:
+                    with conn.cursor() as cursor:
+
+                        print(datetime.datetime.now())
+                        formatted_datetime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        query = f"insert into learntletter values ('{current_user['username']}','{ALPHABET_LIST[st.session_state['alphabet']]}', '{formatted_datetime}')"
+                        cursor.execute(query)
+                        conn.commit()
+                        print(f"You Learnt the alphabet {st.session_state['alphabet']}" )
+    
+                        pass
+            except Exception as e:
+                    print(e)
+            
+ 
+               # Aroosh
+
+            print(st.session_state["alphabet"])
 
             st.session_state["alphabet"] = ( st.session_state["alphabet"] + 1 ) % NUM_ALPHABETS
 
@@ -88,3 +117,4 @@ while True and st.session_state.page == "learnpage":
 
 cap.release()
 cv2.destroyAllWindows()
+conn.close()

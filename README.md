@@ -52,6 +52,18 @@ Install the following dependencies using `pip`:
    pip install matplotlib
    ```
 
+5. **Pandas**  
+   ```bash
+   pip install pandas
+   
+   ```
+
+5. **MySQL Connector**
+   ```bash
+   pip install mysql-connector-python
+
+   ```
+
 ## Usage
 
 To start the application, run the following command in your terminal:
