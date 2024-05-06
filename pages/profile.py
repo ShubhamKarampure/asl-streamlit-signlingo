@@ -11,6 +11,11 @@ if "page" not in st.session_state:
     password="aj19@SQL",
     database="signlingo"
      )
+    
+
+    ## Database,name = signlingo- Profile -> Username, Name, Email; 
+    # learntletter =  username = fk(profile),letter, time(datetime);
+    # Learntword =  username = fk(profile), word, time(datetime);// 
 
     # Create a cursor object
     cursor = conn.cursor()
