@@ -75,46 +75,81 @@ def page_with_webcam_video() :
 
         img {
         border-radius: 1rem;
+        height:450px;
+        width:350px;
         }
 
-
-        .st-as {
-            height:2rem;
-            border-radius: 2rem;
+        .video-container {
+            position: relative;
+            width: 100%;
+            display: flex; /* Use flexbox */
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+            padding: 2rem;
         }
 
-         .video-wrapper {
+        .video-wrapper {
         background-color: white;
         display: inline-block;
-        width: 336px;
-        height: 336px;
+        width: 350px;
+        height: 450px;
         overflow: hidden;
         position: relative;
-        border-radius: 1rem; /* Add border radius to match the image */
-        align-content : center
+        border-radius: 1rem; 
+        align-content : center;
+        transform: scaleX(-1);
+        }
+
+        .video-wrapper video {
+        width: 100%;
+        z-index: 1; /* Ensure video is behind text */
+        }
+
+
+        .text-overlay {
+            position: absolute; 
+            left: 6%;
+            bottom: -7%;;
+            color: #683aff;
+            font-size:150px;
+            z-index: 2;
+            transform:scaleX(-1);
+            text-align: center; /* center the text horizontally */
+        }
+
+        .video-wrapperquiz {
+        background-color: white;
+        width: 250px;
+        height: 250px;
+        overflow: hidden;
+        position: relative;
+        border-radius: 1rem;
+        display: flex; /* Use flexbox */
+        justify-content: center; /* Center horizontally */
+        align-items: center; /* Center vertically */
         }
 
         .letterToFind {
-            font-size: 200px;
-            color: #ffe090;
-            max-height: 20rem;
-            text-align : center;
+        font-size: 190px;
+        color: #ffe090;
+        max-height: 20rem;
+        text-align : center;
         }
 
         .progress-text {
-            margin-top: 10px;
-            text-align: center;
+        margin-top: 10px;
+        text-align: center;
         }
 
         .progress-container {
-            width: 100%;
-            height: 2rem; 
-            background-color: #683aff;
-            border-radius: 5rem;
-            position: relative;
+        width: 100%;
+        height: 2rem; 
+        background-color: #683aff;
+        border-radius: 5rem;
+        position: relative;
         }
 
-            .progress-bar {
+        .progress-bar {
         background-color: #ffe090; 
         height: 100%;
         border-radius: 5rem;
@@ -126,9 +161,47 @@ def page_with_webcam_video() :
         font-weight: bold;
         line-height: 2rem;
         box-shadow: 10px 0 5px rgba(0, 0, 0, 0.2); /* Adjust values as needed */
-    }
+        }
 
+        /* quiz question */
+        .question-text {
+        font-family: 'Arial', sans-serif;
+        font-size: 18px;
+        color: #ffff;
+        text-align: center;
+        margin-bottom: 20px;
+        }
 
+        /* button */
+        .st-emotion-cache-11to1yi {
+        width: 100%;
+        }   
+
+        .st-emotion-cache-1gv5c5a p {
+            word-break: break-word;
+            margin-bottom: 0px;
+            font-size: 25px;
+        }
     
         </style>
     """
+
+def game():
+    return """
+<style>
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f0f0;
+}
+
+.laptop {
+    width: 700px;
+    height: 500px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+}
+</style>
+"""

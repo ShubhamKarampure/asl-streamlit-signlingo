@@ -1,9 +1,29 @@
-# SignLingo
+## Overview
+Signlingo is a web application designed to help individuals learn and practice ASL sign alphabets. Powered by cutting-edge technology, Signlingo utilizes OpenCV for image processing and MediaPipe for action detection, ensuring an accurate and seamless learning experience. It provides interactive lessons, real-time feedback, engaging practice sessions, and progress tracking.
 
-## Description
-SignLingo is an innovative web application designed for individuals who are mute or communicate primarily through sign language. Similar to popular language learning platforms like DuoLingo, SignLingo aims to provide an interactive and engaging way for users to learn and practice sign language.
+## Features
+- Interactive lessons
+- Real-time feedback
+- Engaging practice sessions
+- Progress tracking
 
 ## Requirements
+- Python version 3.10.0
+
+## Installation
+1. Clone the repository.
+2. Navigate to the project directory.
+3. Install dependencies from `requirements.txt` using:
+   ```
+   pip install -r requirements.txt
+   ```
+4. Run the Streamlit app:
+   ```
+   streamlit run Signlingo.py
+   ```
+
+## Contribution
+Contributions are welcome! Feel free to submit pull requests or open issues.
 
 To set up the environment for this project, follow these steps:
 

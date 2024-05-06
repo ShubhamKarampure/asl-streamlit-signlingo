@@ -1,53 +1,49 @@
 import streamlit as st
 import random
 import time
-import streamlit_book as stb
-from styles import page_setup,page_with_webcam_video
+from styles import page_setup, page_with_webcam_video
 from urls import video_urls
 
+# Initialize session state
 if "page" not in st.session_state:
     st.session_state["page"] = "test"
-st.session_state["page"] = "test"
 
 st.markdown(page_setup(), unsafe_allow_html=True)
 st.markdown(page_with_webcam_video(), unsafe_allow_html=True)
 
-title_placeholder = st.empty()
-title_placeholder.header("Quiz Time")
+video_placeholder = st.empty()
 
-def question():
-    col1, col2 = st.columns([0.5,0.5], gap="medium")
-    # Function to update video display
-    def update_video(charachter):
-        return f"""
-        <div class="video-wrapper">
-        <video width="350" height="290" autoplay controlsList="nodownload" loop style="transform: scaleX(-1);">
-            <source src="{video_urls[charachter]}" type="video/mp4">
+question_placehoder = st.empty()
+col1, col2 = st.columns([0.5, 0.5], gap="medium")
+
+
+def update_video(character):
+    return f"""
+        <div class="video-container">
+        <div class="video-wrapperquiz">
+        <video width="300" height="250" autoplay controlsList="nodownload" loop style="transform: scaleX(-1);">
+            <source src="{video_urls[character]}" type="video/mp4">
             Your browser does not support the video tag.
         </video>
+        </div>
         </div>  
         """
 
-    with col2:
-        video_placeholder = st.empty()
+def question():
 
-    # Initialize session state
     if "correct_option" not in st.session_state:
         st.session_state["correct_option"] = None
 
     if "options" not in st.session_state:
-
         st.session_state["options"] = None
+
     if st.session_state["correct_option"] is not None:
         video_placeholder.markdown(
             update_video(st.session_state["correct_option"]), unsafe_allow_html=True
         )
 
-    # Check if the correct option is initialized
     if st.session_state["correct_option"] is None:
-
         st.session_state["correct_option"] = random.choice(list(video_urls.keys()))
-
         video_placeholder.markdown(
             update_video(st.session_state["correct_option"]), unsafe_allow_html=True
         )
@@ -58,28 +54,39 @@ def question():
         if st.session_state["options"] is None:
             options = [correct_option] + incorrect_options
             random.shuffle(options)
-            st.session_state["options"] = options 
+            st.session_state["options"] = options
 
+    question_placehoder.markdown(
+        '<div style="display: flex; justify-content: center;padding-bottom:2rem;"><div style="background-color: #683aff; padding: 10px; border-radius: 15px; width: fit-content;"><p style="margin: 0;">Select the letter corresponding to the sign shown in the video.</p></div></div>',
+        unsafe_allow_html=True,
+    )
+    option_buttons = {}
+
+    # Create buttons in col1 for indices 0 and 1
     with col1:
-        st.subheader("Choose the best option:")
-        checked_answer, correct_answer = stb.single_choice(
-            " ",
-            st.session_state["options"],
-            st.session_state["options"].index(st.session_state["correct_option"]),
-            success=f"Perfect! It's letter {st.session_state['correct_option']}!",
-            error="Sadly, that's not true",
-            button="Click to check",
-        )
+        for idx, option in enumerate(st.session_state["options"][:2]):
+            option_buttons[option] = st.button(f"{option}")
 
-    # Check the answer
-    if checked_answer:
-        if correct_answer:
-            st.balloons()
-            st.session_state["correct_option"] = None
-            st.session_state["options"] = None
-            video_placeholder.empty()
-            time.sleep(2)
-            st.experimental_rerun()
+    # Create buttons in col2 for indices 2 and 3
+    with col2:
+        for idx, option in enumerate(st.session_state["options"][2:], start=2):
+            option_buttons[option] = st.button(f"{option}")
+
+        # Check the selected option
+    for option, button in option_buttons.items():
+        if button:
+            if option == st.session_state["correct_option"]:
+                st.success(
+                    f"Perfect! It's letter {st.session_state['correct_option']}!"
+                )
+                st.balloons()
+                st.session_state["correct_option"] = None
+                st.session_state["options"] = None
+                video_placeholder.empty()
+                time.sleep(2)
+                st.rerun()
+            else:
+                st.error("Sadly, that's not true. Try Again.")
 
 
 question()
