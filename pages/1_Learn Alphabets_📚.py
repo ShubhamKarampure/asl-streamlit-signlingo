@@ -104,7 +104,7 @@ while True and st.session_state.page == "learnpage":
                         query = f"insert into learntletter values ('{current_user['username']}','{ALPHABET_LIST[st.session_state['alphabet']]}', '{formatted_datetime}')"
                         cursor.execute(query)
                         conn.commit()
-                        print(f"You Learnt the alphabet {st.session_state['alphabet']}" )
+                        print(f"You Learnt the alphabet {ALPHABET_LIST[st.session_state['alphabet']]}" )
     
                         pass
             except Exception as e:
