@@ -2,64 +2,54 @@ import pickle
 import mediapipe as mp
 import cv2
 import numpy as np
-import streamlit as st
 
 mp_hands = mp.solutions.hands
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 
-threshold = 0.7
-
-# model_dict = pickle.load(open("model.p", "rb"))
-# model = model_dict["model"]
-
-alphabet_list = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y']
-
-model_dic = {   # missing Q Z
-    'A': 1,
-    'B': 1,
-    'C': 3,
-    'D': 1,
-    'E': 1,
-    'F': 1,
-    'G': 3,
-    'H': 3,
-    'I': 3,
-    'J': 3,
-    'K': 1,
-    'L': 1,
-    'M': 2,
-    'N': 3,
-    'O': 3,
-    'P': 2,
-    'R': 2,
-    'S': 1,
-    'T': 2,
-    'U': 3,
-    'V': 3,
-    'W': 3,
-    'X': 3,
-    'Y': 2
+model_dic = {  # missing Q Z
+    "A": 1,
+    "B": 1,
+    "C": 3,
+    "D": 1,
+    "E": 1,
+    "F": 1,
+    "G": 3,
+    "H": 3,
+    "I": 3,
+    "J": 3,
+    "K": 1,
+    "L": 1,
+    "M": 2,
+    "N": 3,
+    "O": 3,
+    "P": 2,
+    "R": 2,
+    "S": 1,
+    "T": 2,
+    "U": 3,
+    "V": 3,
+    "W": 3,
+    "X": 3,
+    "Y": 2,
 }
 
-action_dir1 = ['A', 'B', 'C', 'D', 'E', 'F', 'K', 'L', 'S']
-action_dir2 = ['G', 'I', 'M', 'P', 'R', 'T', 'V', 'Y']
-action_dir3 = ['A', 'C', 'G', 'H', 'I', 'J', 'N', 'O', 'U', 'V', 'W', 'X']
+action_dirs = [
+    ["A", "B", "C", "D", "E", "F", "K", "L", "S"],
+    ["G", "I", "M", "P", "R", "T", "V", "Y"],
+    ["A", "C", "G", "H", "I", "J", "N", "O", "U", "V", "W", "X"],
+]
 
-model_dict1 = pickle.load(open('./ABCDEFKLS.p', 'rb'))
-model_dict2 = pickle.load(open('./GIMPRTVY.p', 'rb'))
-model_dict3 = pickle.load(open('./ACGHIJNOUVWX.p', 'rb'))
+models = [
+    pickle.load(open("./asl_detection_models/model1.p", "rb"))["model"],
+    pickle.load(open("./asl_detection_models/model2.p", "rb"))["model"],
+    pickle.load(open("./asl_detection_models/model3.p", "rb"))["model"],
+]
 
-threshold1 = 0.75
-threshold2 = 0.7
-threshold3 = 0.7
-
-model1 = model_dict1['model']
-model2 = model_dict2['model']
-model3 = model_dict3['model']
-
+thresholds = [0.75, 0.7, 0.7]
 
 hands = mp_hands.Hands(static_image_mode=True, min_detection_confidence=0.3)
+
 
 def prediction_model(frame, char):
     data_aux = []
@@ -71,7 +61,6 @@ def prediction_model(frame, char):
     frameFlipped = cv2.flip(frame, 1)
 
     if frame is not None:
-        Height, Width, _ = frame.shape  # get (Height, width) of frame
 
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         frameFlipped_rgb = cv2.cvtColor(frameFlipped, cv2.COLOR_BGR2RGB)
@@ -110,23 +99,12 @@ def prediction_model(frame, char):
 
             model_num = model_dic[to_guess]
 
-            if model_num == 1:
-                prediction = model1.predict([np.asarray(data_aux)])
-                prediction_prob = model1.predict_proba([np.asarray(data_aux)])
-                threshold = threshold1
-                action_dir = action_dir1
+            model = models[model_num - 1]
+            threshold = thresholds[model_num - 1]
+            action_dir = action_dirs[model_num - 1]
 
-            elif model_num == 2:
-                prediction = model2.predict([np.asarray(data_aux)])
-                prediction_prob = model2.predict_proba([np.asarray(data_aux)])
-                threshold = threshold2
-                action_dir = action_dir2
-
-            elif model_num == 3:
-                prediction = model3.predict([np.asarray(data_aux)])
-                prediction_prob = model3.predict_proba([np.asarray(data_aux)])
-                threshold = threshold3
-                action_dir = action_dir3
+            prediction = model.predict([np.asarray(data_aux)])
+            prediction_prob = model.predict_proba([np.asarray(data_aux)])
 
             prob = np.max(prediction_prob)
 
@@ -135,9 +113,9 @@ def prediction_model(frame, char):
                     prob = 100
             else:
                 relative_index = action_dir.index(to_guess)
-                prob = (
-                    int(prediction_prob[0][relative_index] * 100) // 10
-                ) * 10
+                prob = (int(prediction_prob[0][relative_index] * 100) // 10) * 10
 
-        frameFlipped = cv2.resize(frameFlipped, (450, 350), fx=0.1, fy=0.1, interpolation=cv2.INTER_CUBIC)
+        frameFlipped = cv2.resize(
+            frameFlipped, (450, 350), fx=0.1, fy=0.1, interpolation=cv2.INTER_CUBIC
+        )
     return frameFlipped, prob

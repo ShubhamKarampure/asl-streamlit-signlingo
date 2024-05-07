@@ -2,38 +2,21 @@ import streamlit as st
 from streamlit_login_auth_ui.widgets import __login__
 from styles import page_setup,hide_navbar,unhide_nav_bar
 import json
-import mysql.connector
+import sqlite3
 
-conn = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="aj19@SQL",
-    database="signlingo"
-     
-     )
-
-    # Create a cursor object
-cursor = conn.cursor()
-
-st.set_page_config(
-        page_title="signlingo",
+conn = sqlite3.connect(
+    "signlingo.db"
 )
+
+c = conn.cursor()
+
+c.execute('''CREATE TABLE IF NOT EXISTS Profile
+                 (Username TEXT PRIMARY KEY, Name TEXT, Email TEXT)''')
+
+conn.commit()
 
 st.markdown(page_setup(), unsafe_allow_html=True)
 st.markdown(hide_navbar(), unsafe_allow_html=True)
-
-__login__obj = __login__(
-    auth_token="courier_auth_token",
-    company_name="signlingo",
-    width=200,
-    height=250,
-    logout_button_name="Logout",
-    hide_menu_bool=True,
-    hide_footer_bool=True,
-    lottie_url="https://assets2.lottiefiles.com/packages/lf20_jcikwtux.json",
-
-)
-
 
 def get_username(self):
         if st.session_state['LOGOUT_BUTTON_HIT'] == False:
@@ -42,7 +25,6 @@ def get_username(self):
                 username=fetched_cookies['__streamlit_login_signup_ui_username__']
                 return username
 
-
 def get_name(self):
         with open("_secret_auth_.json","r") as auth:
              user_data = json.load(auth)
@@ -50,61 +32,72 @@ def get_name(self):
              for user in user_data:
                   if user["username"] == current_user:
                     return user["name"]
+
 def get_email(self):
-        with open("_secret_auth_.json","r") as auth:
-             user_data = json.load(auth)
-             current_user = get_username(self)
-             for user in user_data:
-                  if user["username"] == current_user:
-                    return user["email"]
+    with open("_secret_auth_.json","r") as auth:
+        user_data = json.load(auth)
+        current_user = get_username(self)
+        for user in user_data:
+            if user["username"] == current_user:
+                return user["email"]
 
-             
-
-
-
-
-
-LOGGED_IN = __login__obj.build_login_ui()
-
-if LOGGED_IN == True:
-
-    st.session_state["current_user"] = {"username" :get_username(__login__obj), "name":get_name(__login__obj),"email":get_email(__login__obj),} 
-    # print(st.session_state['current_user'])
-    # print(get_name(__login__obj))
-    print(get_name(__login__obj))
-
-    print(st.session_state["current_user"])
-    global current_user 
-    current_user = st.session_state["current_user"]
+def add_profile_to_database(current_user):
     try:
-        with conn.cursor() as cursor:
-             query = f"insert into profile values ('{current_user['username']}', '{current_user['name']}', '{current_user['email']}');"
-             cursor.execute(query)
-             conn.commit()
-             print("New profile identified and updated")
+        conn = sqlite3.connect("signlingo.db")
+        with conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                """INSERT INTO Profile (Username, Name, Email)
+                                VALUES (?, ?, ?)""",
+                (current_user["username"], current_user["name"], current_user["email"]),
+            )
+            print("New profile identified and updated")
     except Exception as e:
-         print(e)
+        print(f"Error occurred: {e}")
+        # Log the exception or handle it appropriately
     finally:
-        # conn.close()
-        pass 
-         
+        if conn:
+            conn.close()
 
+def main():
+    login_obj = __login__(
+        auth_token="courier_auth_token",
+        company_name="signlingo",
+        width=200,
+        height=250,
+        logout_button_name="Logout",
+        hide_menu_bool=True,
+        hide_footer_bool=True,
+        lottie_url="https://assets2.lottiefiles.com/packages/lf20_jcikwtux.json",
+    )
 
+    logged_in = login_obj.build_login_ui()
 
-    st.markdown(unhide_nav_bar(), unsafe_allow_html=True)
+    if logged_in:
+        current_user = {
+            "username": get_username(login_obj),
+            "name": get_name(login_obj),
+            "email": get_email(login_obj),
+        }
 
-    st.write("# Welcome to Signlingo! 👋")
+        if "current_user" not in st.session_state:
+                st.session_state["current_user"] = current_user
+                
+        add_profile_to_database(current_user)
 
-    if 'page' not in st.session_state:
-        st.session_state['page'] = 'homepage'
+        # Display profiles
+        conn = sqlite3.connect("signlingo.db")
+        c = conn.cursor()
+        c.execute("SELECT * FROM Profile")
+        profiles = c.fetchall()
+        conn.close()
 
-    st.session_state['page'] = 'homepage'
-
-    import streamlit as st
-
-    # Content
-    st.markdown(
-        """
+        st.markdown(unhide_nav_bar(), unsafe_allow_html=True)
+        # Display other content
+        st.write("# Welcome to Signlingo! 👋")
+        # Other content...
+        st.markdown(
+            """
         <div class="section">
             <a class="link" href="About_Us">About</a> | 
             <a class="link" href="#features">Features</a> | 
@@ -137,5 +130,8 @@ if LOGGED_IN == True:
             <p>Have questions or feedback? We'd love to hear from you!</p>
         </div>
         """,
-        unsafe_allow_html=True,
-    )
+            unsafe_allow_html=True,
+        )
+
+if __name__ == "__main__":
+    main()

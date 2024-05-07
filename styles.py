@@ -69,6 +69,7 @@ def unhide_nav_bar() :
         }
         </style>
     """
+
 def page_with_webcam_video() :
     return """
         <style>

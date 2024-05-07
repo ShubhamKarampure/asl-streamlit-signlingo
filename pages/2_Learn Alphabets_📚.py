@@ -2,11 +2,9 @@ import cv2
 import streamlit as st
 import time
 from model import prediction_model
-from urls import video_urls
 from components import progress_bar,update_video
 from styles import page_setup,page_with_webcam_video
 import mysql.connector
-from Signlingo import current_user
 import datetime
 
 print(datetime.datetime.now())
