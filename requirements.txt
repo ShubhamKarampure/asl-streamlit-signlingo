@@ -80,3 +80,8 @@ typing_extensions==4.11.0
 tzdata==2024.1
 urllib3==2.2.1
 watchdog==4.0.0
+scikit-learn==1.4.1.post1
+tensorflow==2.16.1
+mysql-connector-python==8.4.0
+pandas==2.0.3
+

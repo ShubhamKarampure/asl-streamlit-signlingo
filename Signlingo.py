@@ -1,6 +1,19 @@
 import streamlit as st
 from streamlit_login_auth_ui.widgets import __login__
 from styles import page_setup,hide_navbar,unhide_nav_bar
+import json
+import mysql.connector
+
+conn = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    password="aj19@SQL",
+    database="signlingo"
+     
+     )
+
+    # Create a cursor object
+cursor = conn.cursor()
 
 st.set_page_config(
         page_title="signlingo",
@@ -18,11 +31,65 @@ __login__obj = __login__(
     hide_menu_bool=True,
     hide_footer_bool=True,
     lottie_url="https://assets2.lottiefiles.com/packages/lf20_jcikwtux.json",
+
 )
+
+
+def get_username(self):
+        if st.session_state['LOGOUT_BUTTON_HIT'] == False:
+            fetched_cookies = self.cookies
+            if '__streamlit_login_signup_ui_username__' in fetched_cookies.keys():
+                username=fetched_cookies['__streamlit_login_signup_ui_username__']
+                return username
+
+
+def get_name(self):
+        with open("_secret_auth_.json","r") as auth:
+             user_data = json.load(auth)
+             current_user = get_username(self)
+             for user in user_data:
+                  if user["username"] == current_user:
+                    return user["name"]
+def get_email(self):
+        with open("_secret_auth_.json","r") as auth:
+             user_data = json.load(auth)
+             current_user = get_username(self)
+             for user in user_data:
+                  if user["username"] == current_user:
+                    return user["email"]
+
+             
+
+
+
+
 
 LOGGED_IN = __login__obj.build_login_ui()
 
 if LOGGED_IN == True:
+
+    st.session_state["current_user"] = {"username" :get_username(__login__obj), "name":get_name(__login__obj),"email":get_email(__login__obj),} 
+    # print(st.session_state['current_user'])
+    # print(get_name(__login__obj))
+    print(get_name(__login__obj))
+
+    print(st.session_state["current_user"])
+    global current_user 
+    current_user = st.session_state["current_user"]
+    try:
+        with conn.cursor() as cursor:
+             query = f"insert into profile values ('{current_user['username']}', '{current_user['name']}', '{current_user['email']}');"
+             cursor.execute(query)
+             conn.commit()
+             print("New profile identified and updated")
+    except Exception as e:
+         print(e)
+    finally:
+        # conn.close()
+        pass 
+         
+
+
 
     st.markdown(unhide_nav_bar(), unsafe_allow_html=True)
 
