@@ -6,6 +6,8 @@ import pandas as pd
 if "page" not in st.session_state:
     st.session_state["page"] = "profilepage"
 
+st.session_state["page"] = "profilepage"
+
 # Connect to the SQLite database
 conn = sqlite3.connect("signlingo.db")
 
@@ -16,18 +18,18 @@ cursor = conn.cursor()
 current_user = st.session_state["current_user"]
 
 # Execute SQL queries to fetch profile data, letters learnt, and words learnt
-cursor.execute(f"SELECT * FROM profile WHERE username = '{current_user['username']}'")
+cursor.execute(f"SELECT * FROM Profile WHERE Username = '{current_user['username']}'")
 profiledata = cursor.fetchall()
 profile_columns = [i[0] for i in cursor.description]
 
 cursor.execute(
-    f"SELECT * FROM learntletter WHERE username = '{current_user['username']}'"
-)
+    f"SELECT * FROM Alphabet WHERE Username = '{current_user['username']}'")
+
 letterslearnt = cursor.fetchall()
 ll_columns = [i[0] for i in cursor.description]
 
 cursor.execute(
-    f"SELECT * FROM learntword WHERE username = '{current_user['username']}'"
+    f"SELECT * FROM Words WHERE Username = '{current_user['username']}'"
 )
 wordslearnt = cursor.fetchall()
 wl_columns = [i[0] for i in cursor.description]

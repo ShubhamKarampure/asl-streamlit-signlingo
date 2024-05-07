@@ -1,24 +1,25 @@
-import cv2
 import streamlit as st
+import cv2
 import time
+import sqlite3
+import datetime
 from model import prediction_model
 from components import progress_bar,update_video
 from styles import page_setup,page_with_webcam_video
-import mysql.connector
-import datetime
+
 
 print(datetime.datetime.now())
+
 if "page" not in st.session_state or st.session_state["page"]!='learnpage':
     cv2.destroyAllWindows()
     st.session_state["page"] = 'learnpage'
     cap = cv2.VideoCapture(cv2.CAP_DSHOW)
 
-conn = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="aj19@SQL",
-    database="signlingo"
-     )
+conn = sqlite3.connect("signlingo.db")
+c = conn.cursor()
+
+current_user = st.session_state["current_user"]
+
 st.markdown(page_setup(), unsafe_allow_html=True)
 st.markdown(page_with_webcam_video(), unsafe_allow_html=True)
 
@@ -80,8 +81,9 @@ while True and st.session_state.page == "learnpage":
 
     if ret:
 
-        frame, prob = prediction_model(frame,ALPHABET_LIST[st.session_state["alphabet"]])
-        
+        charachter = ALPHABET_LIST[st.session_state["alphabet"]]
+        frame, prob = prediction_model(frame,charachter)
+
         webcam_placeholder.image(frame, channels="BGR")
 
         progress_bar_placeholder.markdown(
@@ -93,23 +95,19 @@ while True and st.session_state.page == "learnpage":
             st.balloons()
 
             video_placeholder.empty()
-             # WORD_LIST[current_word_index] # Aroosh
+            # WORD_LIST[current_word_index] # Aroosh
             try:
-                    with conn.cursor() as cursor:
-
-                        print(datetime.datetime.now())
-                        formatted_datetime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                        query = f"insert into learntletter values ('{current_user['username']}','{ALPHABET_LIST[st.session_state['alphabet']]}', '{formatted_datetime}')"
-                        cursor.execute(query)
-                        conn.commit()
-                        print(f"You Learnt the alphabet {ALPHABET_LIST[st.session_state['alphabet']]}" )
-    
-                        pass
+                c.execute(
+                    """INSERT INTO Alphabet (username, letter) VALUES (?, ?)""",
+                    (current_user["username"], charachter),
+                )
+                print("added_letter")
+                conn.commit()
+                pass
             except Exception as e:
-                    print(e)
-            
- 
-               # Aroosh
+                print(e)            
+
+            # Aroosh
 
             print(st.session_state["alphabet"])
 
@@ -125,3 +123,4 @@ while True and st.session_state.page == "learnpage":
 cap.release()
 cv2.destroyAllWindows()
 conn.close()
+

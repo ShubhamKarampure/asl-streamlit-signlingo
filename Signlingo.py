@@ -10,13 +10,35 @@ conn = sqlite3.connect(
 
 c = conn.cursor()
 
-c.execute('''CREATE TABLE IF NOT EXISTS Profile
-                 (Username TEXT PRIMARY KEY, Name TEXT, Email TEXT)''')
+c.execute('''CREATE TABLE IF NOT EXISTS Profile (
+                    username TEXT PRIMARY KEY,
+                    name TEXT,
+                    email_id TEXT
+                )''')
+
+c.execute(
+    """CREATE TABLE IF NOT EXISTS Alphabet (
+                    username TEXT,
+                    letter TEXT,
+                    PRIMARY KEY (username, letter),
+                    FOREIGN KEY(username) REFERENCES User(username)
+                )"""
+)
+
+c.execute(
+    """CREATE TABLE IF NOT EXISTS Words (
+                    username TEXT,
+                    word TEXT,
+                    PRIMARY KEY (username, word),
+                    FOREIGN KEY(username) REFERENCES User(username)
+                )"""
+)
 
 conn.commit()
 
 st.markdown(page_setup(), unsafe_allow_html=True)
 st.markdown(hide_navbar(), unsafe_allow_html=True)
+
 
 def get_username(self):
         if st.session_state['LOGOUT_BUTTON_HIT'] == False:
@@ -47,11 +69,10 @@ def add_profile_to_database(current_user):
         with conn:
             cursor = conn.cursor()
             cursor.execute(
-                """INSERT INTO Profile (Username, Name, Email)
+                """INSERT INTO Profile (username, name, email_id)
                                 VALUES (?, ?, ?)""",
                 (current_user["username"], current_user["name"], current_user["email"]),
             )
-            print("New profile identified and updated")
     except Exception as e:
         print(f"Error occurred: {e}")
         # Log the exception or handle it appropriately
@@ -59,8 +80,7 @@ def add_profile_to_database(current_user):
         if conn:
             conn.close()
 
-def main():
-    login_obj = __login__(
+login_obj = __login__(
         auth_token="courier_auth_token",
         company_name="signlingo",
         width=200,
@@ -69,29 +89,26 @@ def main():
         hide_menu_bool=True,
         hide_footer_bool=True,
         lottie_url="https://assets2.lottiefiles.com/packages/lf20_jcikwtux.json",
-    )
+)
+current_user = {
+            "username": get_username(login_obj),
+            "name": get_name(login_obj),
+            "email": get_email(login_obj),
+            "id": None
+        }
+
+if "current_user" not in st.session_state:
+        st.session_state["current_user"] = current_user
+
+def main():
+   
 
     logged_in = login_obj.build_login_ui()
 
     if logged_in:
-        current_user = {
-            "username": get_username(login_obj),
-            "name": get_name(login_obj),
-            "email": get_email(login_obj),
-        }
 
-        if "current_user" not in st.session_state:
-                st.session_state["current_user"] = current_user
-                
         add_profile_to_database(current_user)
-
-        # Display profiles
-        conn = sqlite3.connect("signlingo.db")
-        c = conn.cursor()
-        c.execute("SELECT * FROM Profile")
-        profiles = c.fetchall()
-        conn.close()
-
+        
         st.markdown(unhide_nav_bar(), unsafe_allow_html=True)
         # Display other content
         st.write("# Welcome to Signlingo! 👋")

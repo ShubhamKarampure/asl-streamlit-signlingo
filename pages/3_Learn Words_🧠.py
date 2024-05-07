@@ -1,36 +1,26 @@
 import cv2
 import streamlit as st
 import time
+import sqlite3
 from model import prediction_model
-from urls import video_urls
 from components import progress_bar, update_video,detected_word
 from styles import page_setup, page_with_webcam_video
 
-import mysql.connector
-from Signlingo import current_user
-import datetime
 
 if "page" not in st.session_state or st.session_state["page"]!='wordpage':
     cv2.destroyAllWindows()
     st.session_state["page"] = 'wordpage'
-    
-
-conn = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="aj19@SQL",
-    database="signlingo"
-     )
 
 
+conn = sqlite3.connect("signlingo.db")
+c = conn.cursor()
+
+current_user = st.session_state["current_user"]
 
 cap = cv2.VideoCapture(cv2.CAP_DSHOW)
 
 st.markdown(page_setup(), unsafe_allow_html=True)
 st.markdown(page_with_webcam_video(), unsafe_allow_html=True)
-
-
-
 
 
 if "word" not in st.session_state:
@@ -91,8 +81,8 @@ while True and st.session_state["page"] == "wordpage":
         matched_placeholder.markdown(
             detected_word(WORD_LIST[current_word_index],st.session_state["index"]-1), unsafe_allow_html=True
         )
-      #  print("Printing Manually" +WORD_LIST[current_word_index])
-        
+        #  print("Printing Manually" +WORD_LIST[current_word_index])
+
         progress_bar_placeholder.markdown(
             progress_bar(prob),
             unsafe_allow_html=True,
@@ -104,7 +94,7 @@ while True and st.session_state["page"] == "wordpage":
             if st.session_state["index"] == len(
                 WORD_LIST[st.session_state["word"]]
             ):
-                
+
                 matched_placeholder.markdown(
                     detected_word(
                         WORD_LIST[current_word_index], st.session_state["index"] - 1
@@ -113,21 +103,17 @@ while True and st.session_state["page"] == "wordpage":
                 )
                 # WORD_LIST[current_word_index] # Aroosh
                 try:
-                    with conn.cursor() as cursor:
-                        date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                        print(date) 
-                        query = f"insert into learntword values ('{current_user['username']}','{WORD_LIST[st.session_state['word']]}','{date}')"
-                        cursor.execute(query)
-                        conn.commit()
-                        print(f"You Learnt the word {WORD_LIST[st.session_state['word']]}" )
-    
-                        pass
+                    c.execute(
+                        """INSERT INTO Words (username, word) VALUES (?, ?)""",
+                        (current_user["username"], WORD_LIST[st.session_state["word"]]),
+                    )
+                    print("added_letter")
+                    conn.commit()
+                    pass
                 except Exception as e:
                     print(e)
-                finally:
-                    conn.close()
- 
-               # Aroosh
+
+                # Aroosh
                 st.session_state["index"] = 0
                 st.session_state["word"] = (st.session_state["word"] + 1) % NUM_WORD
                 st.balloons()
@@ -145,3 +131,4 @@ while True and st.session_state["page"] == "wordpage":
 
 cap.release()
 cv2.destroyAllWindows()
+conn.close()
