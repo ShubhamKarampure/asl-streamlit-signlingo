@@ -39,7 +39,6 @@ conn.commit()
 st.markdown(page_setup(), unsafe_allow_html=True)
 st.markdown(hide_navbar(), unsafe_allow_html=True)
 
-
 def get_username(self):
         if st.session_state['LOGOUT_BUTTON_HIT'] == False:
             fetched_cookies = self.cookies
@@ -80,7 +79,8 @@ def add_profile_to_database(current_user):
         if conn:
             conn.close()
 
-login_obj = __login__(
+def main():
+    login_obj = __login__(
         auth_token="courier_auth_token",
         company_name="signlingo",
         width=200,
@@ -89,26 +89,23 @@ login_obj = __login__(
         hide_menu_bool=True,
         hide_footer_bool=True,
         lottie_url="https://assets2.lottiefiles.com/packages/lf20_jcikwtux.json",
-)
-current_user = {
+    )
+
+    logged_in = login_obj.build_login_ui()
+
+    if logged_in:
+        current_user = {
             "username": get_username(login_obj),
             "name": get_name(login_obj),
             "email": get_email(login_obj),
             "id": None
         }
 
-if "current_user" not in st.session_state:
-        st.session_state["current_user"] = current_user
-
-def main():
-   
-
-    logged_in = login_obj.build_login_ui()
-
-    if logged_in:
+        if "current_user" not in st.session_state:
+            st.session_state["current_user"] = current_user
 
         add_profile_to_database(current_user)
-        
+
         st.markdown(unhide_nav_bar(), unsafe_allow_html=True)
         # Display other content
         st.write("# Welcome to Signlingo! 👋")
