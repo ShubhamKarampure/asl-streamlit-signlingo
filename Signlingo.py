@@ -90,67 +90,62 @@ login_obj = __login__(
     lottie_url="https://assets2.lottiefiles.com/packages/lf20_jcikwtux.json",
 )
 
-current_user = {
-            "username": get_username(login_obj),
-            "name": get_name(login_obj),
-            "email": get_email(login_obj),
-            "id": None
-        }
 
-if "current_user" not in st.session_state:
-    st.session_state["current_user"] = current_user
-else: st.session_state["current_user"] = current_user
+logged_in = login_obj.build_login_ui()
 
-def main():
+if logged_in:
+
+    current_user = {
+        "username": get_username(login_obj),
+        "name": get_name(login_obj),
+        "email": get_email(login_obj),
+        "id": None,
+    }
+
+    if "current_user" not in st.session_state:
+        st.session_state["current_user"] = current_user
+    else:
+        st.session_state["current_user"] = current_user
+
+    add_profile_to_database(current_user)
+
+    st.markdown(unhide_nav_bar(), unsafe_allow_html=True)
+    # Display other content
+    st.write("# Welcome to Signlingo! 👋")
+    # Other content...
+    st.markdown(
+        """
+    <div class="section">
+        <a class="link" href="About_Us">About</a> | 
+        <a class="link" href="#features">Features</a> | 
+        <a class="link" href="#contact">Contact</a>
+    </div>
+
+    <div class="section">
+        <h2 class="header">Master Sign Language Effortlessly</h2>
+        <p>SignLingo is an innovative web application designed for individuals who are mute or communicate primarily through sign language. Similar to popular language learning platforms like DuoLingo, SignLingo aims to provide an interactive and engaging way for users to learn and practice sign language.</p>
     
+    </div>
 
-    logged_in = login_obj.build_login_ui()
+    <div class="section">
+        <h2 class="header">About SignLingo</h2>
+        <p>SignLingo is revolutionizing the way we learn and practice sign language. Powered by cutting-edge technology, SignLingo utilizes OpenCV for image processing and MediaPipe action detection, ensuring an accurate and seamless learning experience.</p>
+    </div>
 
-    if logged_in:
-        
+    <div class="section">
+        <h2 class="header">Features</h2>
+        <ul>
+            <li>Interactive lessons</li>
+            <li>Real-time feedback</li>
+            <li>Engaging practice sessions</li>
+            <li>Progress tracking</li>
+        </ul>
+    </div>
 
-        add_profile_to_database(current_user)
-
-        st.markdown(unhide_nav_bar(), unsafe_allow_html=True)
-        # Display other content
-        st.write("# Welcome to Signlingo! 👋")
-        # Other content...
-        st.markdown(
-            """
-        <div class="section">
-            <a class="link" href="About_Us">About</a> | 
-            <a class="link" href="#features">Features</a> | 
-            <a class="link" href="#contact">Contact</a>
-        </div>
-
-        <div class="section">
-            <h2 class="header">Master Sign Language Effortlessly</h2>
-            <p>SignLingo is an innovative web application designed for individuals who are mute or communicate primarily through sign language. Similar to popular language learning platforms like DuoLingo, SignLingo aims to provide an interactive and engaging way for users to learn and practice sign language.</p>
-        
-        </div>
-
-        <div class="section">
-            <h2 class="header">About SignLingo</h2>
-            <p>SignLingo is revolutionizing the way we learn and practice sign language. Powered by cutting-edge technology, SignLingo utilizes OpenCV for image processing and MediaPipe action detection, ensuring an accurate and seamless learning experience.</p>
-        </div>
-
-        <div class="section">
-            <h2 class="header">Features</h2>
-            <ul>
-                <li>Interactive lessons</li>
-                <li>Real-time feedback</li>
-                <li>Engaging practice sessions</li>
-                <li>Progress tracking</li>
-            </ul>
-        </div>
-
-        <div class="section">
-            <h2 class="header">Contact Us</h2>
-            <p>Have questions or feedback? We'd love to hear from you!</p>
-        </div>
-        """,
-            unsafe_allow_html=True,
-        )
-
-if __name__ == "__main__":
-    main()
+    <div class="section">
+        <h2 class="header">Contact Us</h2>
+        <p>Have questions or feedback? We'd love to hear from you!</p>
+    </div>
+    """,
+        unsafe_allow_html=True,
+    )

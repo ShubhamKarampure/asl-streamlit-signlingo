@@ -249,7 +249,7 @@ def letterprogress():
 .course-container.letter{
   background-color: #369fff;
   box-shadow: 0px 1px 30px 0px rgba(54, 159, 255, 0.4);
-  background-image: url('images/Frame.png');
+  background-image: url('https://freepngimg.com/save/130272-a-letter-download-hq/512x512');
   background-position: 90%;
   background-repeat: no-repeat;
 }
