@@ -1,3 +1,5 @@
+import math
+
 def page_setup():
     return """
     <style>
@@ -187,22 +189,110 @@ def page_with_webcam_video() :
         </style>
     """
 
-def game():
+def profile():
     return """
 <style>
-body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #f0f0f0;
+*{
+margin: 0px;
+padding: 0px;
+box-sizing: border-box;
+font-family: 'Manrope', sans-serif;
+list-style-type: none;
+text-decoration: none;
 }
 
-.laptop {
-    width: 700px;
-    height: 500px;
-    border: 2px solid #ccc;
-    border-radius: 10px;
+.my_courses_details{
+  padding: 50px;
+  border-right:2px solid #f0f0f0;
+}
+.welcome-content{
+  color: #ffe090;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: 0.9px;
+}
+.my_course_title{
+  padding-top: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.my_course_title h1{
+  color: #ffffff;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: normal;
+}
+
+</style>
+
+"""
+
+def letterprogress():
+    return """
+<style>
+.my_course_details{
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, 400px);
+  gap: 30px;
+  padding-top: 30px;
+  stroke
+}
+.my_course_details .course-container{
+  width: 350px;
+  height: 200px;
+  border-radius: 20px;
+  padding: 15px;
+}
+.course-container.letter{
+  background-color: #369fff;
+  box-shadow: 0px 1px 30px 0px rgba(54, 159, 255, 0.4);
+  background-image: url('images/Frame.png');
+  background-position: 90%;
+  background-repeat: no-repeat;
+}
+.course-container.words{
+  background-color: #ff993a;
+  box-shadow: 0px 1px 30px 0px rgba(255, 153, 58, 0.4);
+  background-image: url('images/train.png');
+  background-position: 90%;
+  background-repeat: no-repeat;
+}
+
+.my_course_details .circle{
+    stroke-dashoffset:"300";
+}
+
+.circular-progress-container {
+  position: relative;
+  width: 52px;
+  height: 52px;
+}
+
+.circular-progress-container .circle{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.circular-progress-container .circle circle{
+  cx: 26px;
+  cy: 26px;
+  r: 24px;
+}
+
+.circular-progress-container .progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  color: #ffffff;
 }
 </style>
 """

@@ -79,30 +79,35 @@ def add_profile_to_database(current_user):
         if conn:
             conn.close()
 
-def main():
-    login_obj = __login__(
-        auth_token="courier_auth_token",
-        company_name="signlingo",
-        width=200,
-        height=250,
-        logout_button_name="Logout",
-        hide_menu_bool=True,
-        hide_footer_bool=True,
-        lottie_url="https://assets2.lottiefiles.com/packages/lf20_jcikwtux.json",
-    )
+login_obj = __login__(
+    auth_token="courier_auth_token",
+    company_name="signlingo",
+    width=200,
+    height=250,
+    logout_button_name="Logout",
+    hide_menu_bool=True,
+    hide_footer_bool=True,
+    lottie_url="https://assets2.lottiefiles.com/packages/lf20_jcikwtux.json",
+)
 
-    logged_in = login_obj.build_login_ui()
-
-    if logged_in:
-        current_user = {
+current_user = {
             "username": get_username(login_obj),
             "name": get_name(login_obj),
             "email": get_email(login_obj),
             "id": None
         }
 
-        if "current_user" not in st.session_state:
-            st.session_state["current_user"] = current_user
+if "current_user" not in st.session_state:
+    st.session_state["current_user"] = current_user
+else: st.session_state["current_user"] = current_user
+
+def main():
+    
+
+    logged_in = login_obj.build_login_ui()
+
+    if logged_in:
+        
 
         add_profile_to_database(current_user)
 
